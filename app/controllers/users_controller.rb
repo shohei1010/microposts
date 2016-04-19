@@ -1,9 +1,12 @@
 class UsersController < ApplicationController
-  before_action :logged_in_user, only: [:edit, :update]
-   before_action :correct_user,   only: [:edit, :update]#これ追加！
+    before_action :logged_in_user, only: [:index, :edit, :update, :destroy, :followings, :followers]
+    before_action :correct_user,   only: [:edit, :update]
    
-  def show # 追加
-   @user = User.find(params[:id])
+  def show
+    @user = User.find(params[:id])
+    @microposts = @user.microposts.order(created_at: :desc)
+    @following_users = @user.following_users.all
+    @follower_users = @user.follower_users.all    
   end
   
   def new
@@ -33,6 +36,17 @@ class UsersController < ApplicationController
     end
   end
 
+  def followings
+    @title = "Following"
+    @user = User.find(params[:id])
+    @following_users = @user.following_users.all
+  end
+
+  def followers
+    @title = "Followers"
+    @user = User.find(params[:id])
+    @follower_users = @user.follower_users.all
+  end
   
   private
 
@@ -55,5 +69,8 @@ class UsersController < ApplicationController
       @user = User.find(params[:id])
       redirect_to(root_url) unless current_user?(@user)
     end
+    
+  
+
   
 end
